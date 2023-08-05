@@ -6,18 +6,34 @@ module.exports = {
 		.setDescription('arg = word to oppress')
 		.addStringOption(option => option.setName('text').setDescription('word to oppress')),
 	async execute(interaction) {
-		console.log(interaction.options)
 		const text = interaction.options.getString('text');
 
 		let channel = await interaction.client.channels.cache.get(interaction.channelId)
-		channel.messages.fetch({ limit: 100 }).then(messages => {
-			messages.forEach(message => {
-				console.log(message.content)
-					if(message.content.includes(text)){
-						message.delete()
-					}
-				})
-		  })
-		return interaction.reply({ content: `done :rainbow_flag:`, ephemeral: true })
+		fetchAllMessages(channel,text)
+		return interaction.reply({ content: `working on it  :rainbow_flag:`, ephemeral: true })
 	},
 };
+async function fetchAllMessages(channel,textToDelete) {
+
+	let messages = [];
+  
+	// Create message pointer
+	let message = await channel.messages
+	  .fetch({ limit: 1 })
+	  .then(messagePage => (messagePage.size === 1 ? messagePage.at(0) : null));
+  
+	while (message) {
+	  await channel.messages
+		.fetch({ limit: 3, before: message.id })
+		.then(messagePage => {
+		  messagePage.forEach(msg => {
+			if(msg.content.includes(textToDelete)){
+				msg.delete();
+			}
+		 });
+  
+		  // Update our message pointer to be the last message on the page of messages
+		  message = 0 < messagePage.size ? messagePage.at(messagePage.size - 1) : null;
+		});
+	}
+  }
