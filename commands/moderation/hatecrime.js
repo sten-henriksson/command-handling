@@ -27,6 +27,7 @@ async function fetchAllMessages(channel,textToDelete) {
 			.fetch({ limit: 100, before: message.id })
 			.then(messagePage => {
 			  messagePage.forEach(msg => {
+				i++;
 				if(msg.content.includes(textToDelete)){
 					msg.delete();
 				}
