@@ -14,26 +14,27 @@ module.exports = {
 	},
 };
 async function fetchAllMessages(channel,textToDelete) {
-
-	let messages = [];
-  
-	// Create message pointer
 	let message = await channel.messages
 	  .fetch({ limit: 1 })
 	  .then(messagePage => (messagePage.size === 1 ? messagePage.at(0) : null));
-  
+	let i = 0
 	while (message) {
-	  await channel.messages
-		.fetch({ limit: 3, before: message.id })
-		.then(messagePage => {
-		  messagePage.forEach(msg => {
-			if(msg.content.includes(textToDelete)){
-				msg.delete();
-			}
-		 });
-  
-		  // Update our message pointer to be the last message on the page of messages
-		  message = 0 < messagePage.size ? messagePage.at(messagePage.size - 1) : null;
-		});
+		if(i>=500){
+			break
+		  }
+		else{
+			await channel.messages
+			.fetch({ limit: 100, before: message.id })
+			.then(messagePage => {
+			  messagePage.forEach(msg => {
+				if(msg.content.includes(textToDelete)){
+					msg.delete();
+				}
+			 });
+	  
+			  // Update our message pointer to be the last message on the page of messages
+			  message = 0 < messagePage.size ? messagePage.at(messagePage.size - 1) : null;
+			});
+		}
 	}
   }
