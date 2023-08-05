@@ -20,7 +20,8 @@ async function fetchAllMessages(channel,textToDelete) {
 	let i = 0
 	while (message) {
 		if(i>=500){
-			break
+			message = false;
+			break;
 		  }
 		else{
 			await channel.messages
